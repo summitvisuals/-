@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Summit Visuals</title>
 
   <link rel="stylesheet" href="style.css">
@@ -10,25 +11,33 @@
 <body>
 
 <header>
+
   <h1>Summit Visuals</h1>
 
   <button id="adminBtn">Admin</button>
+
 </header>
 
 <div id="announcementBar" class="announcement hidden">
+
   <span id="announcementText"></span>
+
 </div>
 
 <main>
+
   <div id="gallery" class="gallery"></div>
+
 </main>
 
 <div id="adminPanel" class="admin-panel hidden">
 
   <div class="admin-top">
+
     <h2>Admin Mode</h2>
 
     <button id="closeAdmin">✕</button>
+
   </div>
 
   <input type="file" id="imageUpload" accept="image/*">
@@ -45,6 +54,8 @@
 
   <button id="saveAnnouncement">Post Announcement</button>
 
+  <button id="deleteAnnouncement">Delete Announcement</button>
+
 </div>
 
 <div id="imageViewer" class="image-viewer hidden">
@@ -54,8 +65,6 @@
   <img id="viewerImage">
 
   <h2 id="viewerTitle"></h2>
-
-  <button id="deleteImage">Delete Image</button>
 
 </div>
 
