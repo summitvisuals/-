@@ -2,32 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Summit Visuals</title>
-  <link rel="stylesheet" href="style.css" />
+
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <header>
-    <h1>Summit Visuals</h1>
+<header>
+  <h1>Summit Visuals</h1>
 
-    <button id="adminBtn">Admin</button>
-  </header>
+  <button id="adminBtn">Admin</button>
+</header>
 
-  <main>
-    <div id="gallery" class="gallery"></div>
-  </main>
+<main>
+  <div id="gallery" class="gallery"></div>
+</main>
 
-  <div id="adminPanel" class="admin-panel hidden">
+<div id="adminPanel" class="admin-panel hidden">
+  <div class="admin-top">
     <h2>Admin Mode</h2>
 
-    <input type="file" id="imageUpload" accept="image/*" />
-    <input type="text" id="imageTitle" placeholder="Image title" />
-
-    <button id="uploadBtn">Add Image</button>
+    <button id="closeAdmin">X</button>
   </div>
 
-  <script src="script.js"></script>
+  <input type="file" id="imageUpload" accept="image/*">
+
+  <input type="text" id="imageTitle" placeholder="Image title">
+
+  <button id="uploadBtn">Add Image</button>
+</div>
+
+<div id="imageViewer" class="image-viewer hidden">
+  <span id="closeViewer">&times;</span>
+
+  <img id="viewerImage">
+
+  <h2 id="viewerTitle"></h2>
+</div>
+
+<script src="script.js"></script>
 
 </body>
 </html>
