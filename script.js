@@ -1,160 +1,176 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+const ADMIN_CODE = "29399";
+
+const adminBtn = document.getElementById("adminBtn");
+const adminPanel = document.getElementById("adminPanel");
+const closeAdmin = document.getElementById("closeAdmin");
+
+const uploadBtn = document.getElementById("uploadBtn");
+const gallery = document.getElementById("gallery");
+
+const imageViewer = document.getElementById("imageViewer");
+const viewerImage = document.getElementById("viewerImage");
+const viewerTitle = document.getElementById("viewerTitle");
+const closeViewer = document.getElementById("closeViewer");
+
+const deleteImage = document.getElementById("deleteImage");
+
+const announcementBar = document.getElementById("announcementBar");
+const announcementText = document.getElementById("announcementText");
+const announcementInput = document.getElementById("announcementInput");
+const saveAnnouncement = document.getElementById("saveAnnouncement");
+
+let images = JSON.parse(localStorage.getItem("galleryImages")) || [];
+
+let currentImageIndex = null;
+
+const savedAnnouncement = localStorage.getItem("announcement");
+
+if (savedAnnouncement) {
+  announcementBar.classList.remove("hidden");
+  announcementText.textContent = savedAnnouncement;
 }
 
-body {
-  background: #0d0d0d;
-  color: white;
-  font-family: Arial, sans-serif;
+function renderGallery() {
+
+  gallery.innerHTML = "";
+
+  images.forEach((image, index) => {
+
+    const card = document.createElement("div");
+
+    card.className = "card";
+
+    card.innerHTML = `
+      <img src="${image.src}">
+      <h3>${image.title}</h3>
+    `;
+
+    card.addEventListener("click", () => {
+
+      currentImageIndex = index;
+
+      viewerImage.src = image.src;
+
+      viewerTitle.textContent = image.title;
+
+      imageViewer.classList.remove("hidden");
+
+    });
+
+    gallery.appendChild(card);
+
+  });
+
 }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 40px;
-  border-bottom: 1px solid #222;
-  background: rgba(0,0,0,0.9);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
+renderGallery();
 
-h1 {
-  font-size: 28px;
-  letter-spacing: 2px;
-}
+adminBtn.addEventListener("click", () => {
 
-#adminBtn {
-  background: white;
-  color: black;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: bold;
-}
+  const code = prompt("Enter Admin Code");
 
-.announcement {
-  background: white;
-  color: black;
-  padding: 15px;
-  text-align: center;
-  font-weight: bold;
-}
+  if (code === ADMIN_CODE) {
 
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 40px;
-}
+    adminPanel.classList.remove("hidden");
 
-.card {
-  background: #161616;
-  border-radius: 18px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: 0.3s;
-}
+  } else {
 
-.card:hover {
-  transform: scale(1.03);
-}
+    alert("Wrong code");
 
-.card img {
-  width: 100%;
-  aspect-ratio: 1/1;
-  object-fit: cover;
-}
+  }
 
-.card h3 {
-  padding: 15px;
-}
+});
 
-.admin-panel {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #111;
-  border: 1px solid #333;
-  padding: 25px;
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  width: 320px;
-  z-index: 500;
-}
+closeAdmin.addEventListener("click", () => {
 
-.admin-panel input,
-.admin-panel button {
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-}
+  adminPanel.classList.add("hidden");
 
-.admin-panel button {
-  background: white;
-  color: black;
-  font-weight: bold;
-  cursor: pointer;
-}
+});
 
-.admin-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+closeViewer.addEventListener("click", () => {
 
-#closeAdmin {
-  width: 40px;
-}
+  imageViewer.classList.add("hidden");
 
-.image-viewer {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.95);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 600;
-  padding: 20px;
-}
+});
 
-.image-viewer img {
-  max-width: 90%;
-  max-height: 75vh;
-  border-radius: 20px;
-}
+uploadBtn.addEventListener("click", () => {
 
-.image-viewer h2 {
-  margin-top: 20px;
-}
+  const file = document.getElementById("imageUpload").files[0];
 
-#closeViewer {
-  position: absolute;
-  top: 30px;
-  right: 40px;
-  font-size: 50px;
-  cursor: pointer;
-}
+  const title = document.getElementById("imageTitle").value;
 
-#deleteImage {
-  margin-top: 20px;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 10px;
-  background: white;
-  color: black;
-  cursor: pointer;
-  font-weight: bold;
-}
+  if (!file || !title) {
 
-.hidden {
-  display: none !important;
-}
+    alert("Add image and title");
+
+    return;
+
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+
+    images.push({
+
+      src: e.target.result,
+
+      title: title
+
+    });
+
+    localStorage.setItem("galleryImages", JSON.stringify(images));
+
+    renderGallery();
+
+    document.getElementById("imageUpload").value = "";
+
+    document.getElementById("imageTitle").value = "";
+
+  };
+
+  reader.readAsDataURL(file);
+
+});
+
+deleteImage.addEventListener("click", () => {
+
+  const code = prompt("Enter Admin Code To Delete");
+
+  if (code !== ADMIN_CODE) {
+
+    alert("Wrong code");
+
+    return;
+
+  }
+
+  if (currentImageIndex !== null) {
+
+    images.splice(currentImageIndex, 1);
+
+    localStorage.setItem("galleryImages", JSON.stringify(images));
+
+    renderGallery();
+
+    imageViewer.classList.add("hidden");
+
+  }
+
+});
+
+saveAnnouncement.addEventListener("click", () => {
+
+  const text = announcementInput.value;
+
+  if (!text) return;
+
+  localStorage.setItem("announcement", text);
+
+  announcementText.textContent = text;
+
+  announcementBar.classList.remove("hidden");
+
+  announcementInput.value = "";
+
+});
