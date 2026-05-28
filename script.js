@@ -20,7 +20,6 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(10px);
 }
 
 h1 {
@@ -35,6 +34,14 @@ h1 {
   padding: 10px 18px;
   border-radius: 10px;
   cursor: pointer;
+  font-weight: bold;
+}
+
+.announcement {
+  background: white;
+  color: black;
+  padding: 15px;
+  text-align: center;
   font-weight: bold;
 }
 
@@ -59,13 +66,12 @@ h1 {
 
 .card img {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1/1;
   object-fit: cover;
 }
 
 .card h3 {
   padding: 15px;
-  font-size: 18px;
 }
 
 .admin-panel {
@@ -81,7 +87,7 @@ h1 {
   flex-direction: column;
   gap: 15px;
   width: 320px;
-  z-index: 200;
+  z-index: 500;
 }
 
 .admin-panel input,
@@ -108,10 +114,6 @@ h1 {
   width: 40px;
 }
 
-.hidden {
-  display: none;
-}
-
 .image-viewer {
   position: fixed;
   inset: 0;
@@ -120,13 +122,13 @@ h1 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 300;
+  z-index: 600;
   padding: 20px;
 }
 
 .image-viewer img {
   max-width: 90%;
-  max-height: 80vh;
+  max-height: 75vh;
   border-radius: 20px;
 }
 
@@ -140,4 +142,19 @@ h1 {
   right: 40px;
   font-size: 50px;
   cursor: pointer;
+}
+
+#deleteImage {
+  margin-top: 20px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: white;
+  color: black;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.hidden {
+  display: none !important;
 }
