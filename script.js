@@ -12,23 +12,16 @@ const viewerImage = document.getElementById("viewerImage");
 const viewerTitle = document.getElementById("viewerTitle");
 const closeViewer = document.getElementById("closeViewer");
 
-const deleteImage = document.getElementById("deleteImage");
-
 const announcementBar = document.getElementById("announcementBar");
 const announcementText = document.getElementById("announcementText");
+
 const announcementInput = document.getElementById("announcementInput");
+
 const saveAnnouncement = document.getElementById("saveAnnouncement");
 
+const deleteAnnouncement = document.getElementById("deleteAnnouncement");
+
 let images = JSON.parse(localStorage.getItem("galleryImages")) || [];
-
-let currentImageIndex = null;
-
-const savedAnnouncement = localStorage.getItem("announcement");
-
-if (savedAnnouncement) {
-  announcementBar.classList.remove("hidden");
-  announcementText.textContent = savedAnnouncement;
-}
 
 function renderGallery() {
 
@@ -43,17 +36,40 @@ function renderGallery() {
     card.innerHTML = `
       <img src="${image.src}">
       <h3>${image.title}</h3>
+      <button class="deleteBtn">Delete</button>
     `;
 
-    card.addEventListener("click", () => {
+    const imageElement = card.querySelector("img");
 
-      currentImageIndex = index;
+    imageElement.addEventListener("click", () => {
 
       viewerImage.src = image.src;
 
       viewerTitle.textContent = image.title;
 
       imageViewer.classList.remove("hidden");
+
+    });
+
+    const deleteBtn = card.querySelector(".deleteBtn");
+
+    deleteBtn.addEventListener("click", () => {
+
+      const code = prompt("Enter Admin Code");
+
+      if (code !== ADMIN_CODE) {
+
+        alert("Wrong code");
+
+        return;
+
+      }
+
+      images.splice(index, 1);
+
+      localStorage.setItem("galleryImages", JSON.stringify(images));
+
+      renderGallery();
 
     });
 
@@ -133,32 +149,6 @@ uploadBtn.addEventListener("click", () => {
 
 });
 
-deleteImage.addEventListener("click", () => {
-
-  const code = prompt("Enter Admin Code To Delete");
-
-  if (code !== ADMIN_CODE) {
-
-    alert("Wrong code");
-
-    return;
-
-  }
-
-  if (currentImageIndex !== null) {
-
-    images.splice(currentImageIndex, 1);
-
-    localStorage.setItem("galleryImages", JSON.stringify(images));
-
-    renderGallery();
-
-    imageViewer.classList.add("hidden");
-
-  }
-
-});
-
 saveAnnouncement.addEventListener("click", () => {
 
   const text = announcementInput.value;
@@ -171,6 +161,22 @@ saveAnnouncement.addEventListener("click", () => {
 
   announcementBar.classList.remove("hidden");
 
-  announcementInput.value = "";
+});
+
+deleteAnnouncement.addEventListener("click", () => {
+
+  localStorage.removeItem("announcement");
+
+  announcementBar.classList.add("hidden");
 
 });
+
+const savedAnnouncement = localStorage.getItem("announcement");
+
+if (savedAnnouncement) {
+
+  announcementText.textContent = savedAnnouncement;
+
+  announcementBar.classList.remove("hidden");
+
+}
