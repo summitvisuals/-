@@ -1,50 +1,3 @@
-# Summit Visuals Portfolio Website
-
-Create these files in your GitHub repository.
-
----
-
-## index.html
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Summit Visuals</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <header>
-    <h1>Summit Visuals</h1>
-
-    <button id="adminBtn">Admin</button>
-  </header>
-
-  <main>
-    <div id="gallery" class="gallery"></div>
-  </main>
-
-  <div id="adminPanel" class="admin-panel hidden">
-    <h2>Admin Mode</h2>
-
-    <input type="file" id="imageUpload" accept="image/*" />
-    <input type="text" id="imageTitle" placeholder="Image title" />
-
-    <button id="uploadBtn">Add Image</button>
-  </div>
-
-  <script src="script.js"></script>
-</body>
-</html>
-```
-
----
-
-## style.css
-
-```css
 * {
   margin: 0;
   padding: 0;
@@ -63,9 +16,10 @@ header {
   align-items: center;
   padding: 20px 40px;
   border-bottom: 1px solid #222;
+  background: rgba(0,0,0,0.9);
   position: sticky;
   top: 0;
-  background: rgba(0,0,0,0.9);
+  z-index: 100;
   backdrop-filter: blur(10px);
 }
 
@@ -86,7 +40,7 @@ h1 {
 
 .gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
   padding: 40px;
 }
@@ -95,21 +49,23 @@ h1 {
   background: #161616;
   border-radius: 18px;
   overflow: hidden;
+  cursor: pointer;
   transition: 0.3s;
 }
 
 .card:hover {
-  transform: scale(1.02);
+  transform: scale(1.03);
 }
 
 .card img {
   width: 100%;
-  height: 300px;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
 }
 
 .card h3 {
   padding: 15px;
+  font-size: 18px;
 }
 
 .admin-panel {
@@ -119,12 +75,13 @@ h1 {
   transform: translate(-50%, -50%);
   background: #111;
   border: 1px solid #333;
-  padding: 30px;
+  padding: 25px;
   border-radius: 20px;
   display: flex;
   flex-direction: column;
   gap: 15px;
-  width: 300px;
+  width: 320px;
+  z-index: 200;
 }
 
 .admin-panel input,
@@ -141,109 +98,46 @@ h1 {
   cursor: pointer;
 }
 
+.admin-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#closeAdmin {
+  width: 40px;
+}
+
 .hidden {
   display: none;
 }
-```
 
----
-
-## script.js
-
-```javascript
-const ADMIN_CODE = "29399";
-
-const adminBtn = document.getElementById("adminBtn");
-const adminPanel = document.getElementById("adminPanel");
-const uploadBtn = document.getElementById("uploadBtn");
-const gallery = document.getElementById("gallery");
-
-let images = JSON.parse(localStorage.getItem("galleryImages")) || [];
-
-function renderGallery() {
-  gallery.innerHTML = "";
-
-  images.forEach((image, index) => {
-    const card = document.createElement("div");
-    card.className = "card";
-
-    card.innerHTML = `
-      <img src="${image.src}" alt="${image.title}">
-      <h3>${image.title}</h3>
-    `;
-
-    gallery.appendChild(card);
-  });
+.image-viewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 300;
+  padding: 20px;
 }
 
-renderGallery();
+.image-viewer img {
+  max-width: 90%;
+  max-height: 80vh;
+  border-radius: 20px;
+}
 
-adminBtn.addEventListener("click", () => {
-  const code = prompt("Enter Admin Code");
+.image-viewer h2 {
+  margin-top: 20px;
+}
 
-  if (code === ADMIN_CODE) {
-    adminPanel.classList.remove("hidden");
-  } else {
-    alert("Wrong code");
-  }
-});
-
-uploadBtn.addEventListener("click", () => {
-  const file = document.getElementById("imageUpload").files[0];
-  const title = document.getElementById("imageTitle").value;
-
-  if (!file || !title) {
-    alert("Add image and title");
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = function(e) {
-    images.push({
-      src: e.target.result,
-      title: title
-    });
-
-    localStorage.setItem("galleryImages", JSON.stringify(images));
-
-    renderGallery();
-
-    document.getElementById("imageUpload").value = "";
-    document.getElementById("imageTitle").value = "";
-  };
-
-  reader.readAsDataURL(file);
-});
-```
-
----
-
-# How To Upload
-
-1. In GitHub click "Add file"
-2. Click "Create new file"
-3. Make these files:
-
-   * index.html
-   * style.css
-   * script.js
-4. Paste the matching code into each file
-5. Press "Commit changes"
-
----
-
-# Turn On The Website
-
-1. Go to repository Settings
-2. Click Pages
-3. Source → Deploy from branch
-4. Branch → main
-5. Folder → /root
-6. Save
-
-Wait a few minutes and your portfolio website will be live.
-
-Your admin code is:
-
-29399
+#closeViewer {
+  position: absolute;
+  top: 30px;
+  right: 40px;
+  font-size: 50px;
+  cursor: pointer;
+}
