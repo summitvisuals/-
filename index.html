@@ -1,10 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Summit Visuals</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body style="background:black;color:white;text-align:center;font-family:Arial;">
-  <h1>Welcome to Summit Visuals</h1>
-  <p>Hello and my name is ben. I am the owner at Summit Visuals. This is my work and pictures that I took.</p>
+<body>
+
+  <header>
+    <h1>Summit Visuals</h1>
+
+    <button id="adminBtn">Admin</button>
+  </header>
+
+  <main>
+    <div id="gallery" class="gallery"></div>
+  </main>
+
+  <div id="adminPanel" class="admin-panel hidden">
+    <h2>Admin Mode</h2>
+
+    <input type="file" id="imageUpload" accept="image/*" />
+    <input type="text" id="imageTitle" placeholder="Image title" />
+
+    <button id="uploadBtn">Add Image</button>
+  </div>
+
+  <script src="script.js"></script>
+
 </body>
 </html>
