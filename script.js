@@ -1,85 +1,39 @@
 const ADMIN_CODE = "29399";
 
+const SUPABASE_URL = "https://toiiahcerainrtudyzzl.supabase.co";
+
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvaWlhaGNlcmFpbnJ0dWR5enpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMTY3OTksImV4cCI6MjA5NTU5Mjc5OX0.nht4Pu64jPTj1rCsAuCBUWdQxplt28i_W6AxbaekoHs";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+const gallery = document.getElementById("gallery");
+
 const adminBtn = document.getElementById("adminBtn");
+
 const adminPanel = document.getElementById("adminPanel");
+
 const closeAdmin = document.getElementById("closeAdmin");
 
 const uploadBtn = document.getElementById("uploadBtn");
-const gallery = document.getElementById("gallery");
 
-const imageViewer = document.getElementById("imageViewer");
-const viewerImage = document.getElementById("viewerImage");
-const viewerTitle = document.getElementById("viewerTitle");
 const closeViewer = document.getElementById("closeViewer");
 
-const announcementBar = document.getElementById("announcementBar");
-const announcementText = document.getElementById("announcementText");
+const imageViewer = document.getElementById("imageViewer");
 
-const announcementInput = document.getElementById("announcementInput");
+const viewerImage = document.getElementById("viewerImage");
+
+const viewerTitle = document.getElementById("viewerTitle");
+
+const announcementBar = document.getElementById("announcementBar");
+
+const announcementText = document.getElementById("announcementText");
 
 const saveAnnouncement = document.getElementById("saveAnnouncement");
 
 const deleteAnnouncement = document.getElementById("deleteAnnouncement");
-
-let images = JSON.parse(localStorage.getItem("galleryImages")) || [];
-
-function renderGallery() {
-
-  gallery.innerHTML = "";
-
-  images.forEach((image, index) => {
-
-    const card = document.createElement("div");
-
-    card.className = "card";
-
-    card.innerHTML = `
-      <img src="${image.src}">
-      <h3>${image.title}</h3>
-      <button class="deleteBtn">Delete</button>
-    `;
-
-    const imageElement = card.querySelector("img");
-
-    imageElement.addEventListener("click", () => {
-
-      viewerImage.src = image.src;
-
-      viewerTitle.textContent = image.title;
-
-      imageViewer.classList.remove("hidden");
-
-    });
-
-    const deleteBtn = card.querySelector(".deleteBtn");
-
-    deleteBtn.addEventListener("click", () => {
-
-      const code = prompt("Enter Admin Code");
-
-      if (code !== ADMIN_CODE) {
-
-        alert("Wrong code");
-
-        return;
-
-      }
-
-      images.splice(index, 1);
-
-      localStorage.setItem("galleryImages", JSON.stringify(images));
-
-      renderGallery();
-
-    });
-
-    gallery.appendChild(card);
-
-  });
-
-}
-
-renderGallery();
 
 adminBtn.addEventListener("click", () => {
 
@@ -88,10 +42,6 @@ adminBtn.addEventListener("click", () => {
   if (code === ADMIN_CODE) {
 
     adminPanel.classList.remove("hidden");
-
-  } else {
-
-    alert("Wrong code");
 
   }
 
@@ -109,74 +59,141 @@ closeViewer.addEventListener("click", () => {
 
 });
 
-uploadBtn.addEventListener("click", () => {
+async function loadImages() {
+
+  const { data } = await supabaseClient
+    .from("images")
+    .select("*");
+
+  gallery.innerHTML = "";
+
+  data.forEach((image) => {
+
+    const card = document.createElement("div");
+
+    card.className = "card";
+
+    card.innerHTML = `
+      <img src="${image.image_url}">
+      <h3>${image.title}</h3>
+      <button class="deleteBtn">Delete</button>
+    `;
+
+    const img = card.querySelector("img");
+
+    img.addEventListener("click", () => {
+
+      viewerImage.src = image.image_url;
+
+      viewerTitle.textContent = image.title;
+
+      imageViewer.classList.remove("hidden");
+
+    });
+
+    const deleteBtn = card.querySelector(".deleteBtn");
+
+    deleteBtn.addEventListener("click", async () => {
+
+      const code = prompt("Admin Code");
+
+      if (code !== ADMIN_CODE) return;
+
+      await supabaseClient
+        .from("images")
+        .delete()
+        .eq("id", image.id);
+
+      loadImages();
+
+    });
+
+    gallery.appendChild(card);
+
+  });
+
+}
+
+loadImages();
+
+uploadBtn.addEventListener("click", async () => {
 
   const file = document.getElementById("imageUpload").files[0];
 
   const title = document.getElementById("imageTitle").value;
 
-  if (!file || !title) {
+  if (!file || !title) return;
 
-    alert("Add image and title");
+  const fileName = Date.now() + "-" + file.name;
 
-    return;
+  await supabaseClient.storage
+    .from("gallery")
+    .upload(fileName, file);
 
-  }
+  const { data } = supabaseClient.storage
+    .from("gallery")
+    .getPublicUrl(fileName);
 
-  const reader = new FileReader();
+  await supabaseClient
+    .from("images")
+    .insert([
+      {
+        title: title,
+        image_url: data.publicUrl
+      }
+    ]);
 
-  reader.onload = function(e) {
-
-    images.push({
-
-      src: e.target.result,
-
-      title: title
-
-    });
-
-    localStorage.setItem("galleryImages", JSON.stringify(images));
-
-    renderGallery();
-
-    document.getElementById("imageUpload").value = "";
-
-    document.getElementById("imageTitle").value = "";
-
-  };
-
-  reader.readAsDataURL(file);
+  loadImages();
 
 });
 
-saveAnnouncement.addEventListener("click", () => {
+saveAnnouncement.addEventListener("click", async () => {
 
-  const text = announcementInput.value;
+  const text = document.getElementById("announcementInput").value;
 
-  if (!text) return;
+  await supabaseClient
+    .from("announcements")
+    .delete()
+    .neq("id", 0);
 
-  localStorage.setItem("announcement", text);
+  await supabaseClient
+    .from("announcements")
+    .insert([
+      {
+        text: text
+      }
+    ]);
 
-  announcementText.textContent = text;
-
-  announcementBar.classList.remove("hidden");
+  loadAnnouncement();
 
 });
 
-deleteAnnouncement.addEventListener("click", () => {
+deleteAnnouncement.addEventListener("click", async () => {
 
-  localStorage.removeItem("announcement");
+  await supabaseClient
+    .from("announcements")
+    .delete()
+    .neq("id", 0);
 
   announcementBar.classList.add("hidden");
 
 });
 
-const savedAnnouncement = localStorage.getItem("announcement");
+async function loadAnnouncement() {
 
-if (savedAnnouncement) {
+  const { data } = await supabaseClient
+    .from("announcements")
+    .select("*")
+    .limit(1);
 
-  announcementText.textContent = savedAnnouncement;
+  if (data.length > 0) {
 
-  announcementBar.classList.remove("hidden");
+    announcementText.textContent = data[0].text;
+
+    announcementBar.classList.remove("hidden");
+
+  }
 
 }
+
+loadAnnouncement();
